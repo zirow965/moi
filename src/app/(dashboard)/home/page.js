@@ -7,7 +7,7 @@ import ChangeActivityModal from '@/components/ChangeActivityModal';
 import ChangeOwnerModal from '@/components/ChangeOwnerModal';
 import ChangeCarModal from '@/components/ChangeCarModal';
 import CompleteInformationModal from '@/components/CompleteInformationModal';
-import { addCompany, modifyCompany } from "@/utils/firebaseHelper";
+import { addCompany, modifyCompany } from "@/utils/FirebaseHelper";
 import Swal from 'sweetalert2';
 import { db } from '@/utils/firebaseConfig';
 import { AuthContext } from "@/utils/context";
@@ -176,10 +176,11 @@ const Page = () => {
 		handleEditAction({id: selectedCar.id, ...updatedData}, action)
 	};
 
+	if (loading)
+		return <div/>
+
 	return (
-		<div className="container mx-auto mt-12">
-			{loading ? <span>Loading...</span> : (
-				<div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+				<div className="relative overflow-x-auto shadow-md sm:rounded-lg flex flex-col grow ">
 					<div className="flex justify-between pb-4 bg-white dark:bg-gray-900">
 						<div>
 							<label htmlFor="table-search" className="sr-only">Search</label>
@@ -204,7 +205,8 @@ const Page = () => {
 							Add
 						</button>
 					</div>
-					<table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+					<div className={'grow'}>
+					<table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 grow">
 						<thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 						<tr>
 							<th scope="col" className="px-6 py-3">Company ID</th>
@@ -284,6 +286,7 @@ const Page = () => {
 						))}
 						</tbody>
 					</table>
+					</div>
 					<ul className="inline-flex -space-x-px text-sm mt-12">
 						<li>
 							<button
@@ -314,8 +317,6 @@ const Page = () => {
 							</button>
 						</li>
 					</ul>
-				</div>
-			)}
 			<AddCarModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onSubmit={handleAddCompany} />
 			<RenewLicenseModal isOpen={isRenewLicenseModalOpen} onClose={() => setRenewLicenseModalOpen(false)} onSubmit={async (renewalNumber) => {
 				const key = new Date().getTime();
