@@ -32,13 +32,13 @@ const Page = () => {
 		fetch('/api/users', {
 			method: 'GET',
 			headers: {
-				'authorization': '364c9f6a-2e40-429f-bd1c-fba2e39b17a',
+				'authorization': '364c9f6a-2e40-429f-bd1c-fba2e39b17a6',
 			}
 		}).then(res => {
 			console.log(res)
 			if (res.status === 500) {
 				Swal.fire({
-					title: 'Not authorized',
+					title: 'Error fetching users',
 					icon: 'error',
 					confirmButtonText: 'OK'
 				})
