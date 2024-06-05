@@ -35,7 +35,6 @@ const UsersCard = ({user}) => {
 	return (
 					<div key={user.id} className="flex items-center space-x-4 rounded-md bg-white py-4 px-2 shadow-sm dark:bg-gray-700">
 						<Avatar className="h-10 w-10">
-							<AvatarImage alt={user.name} src={user.avatar} />
 							<AvatarFallback className={'dark:bg-gray-600'}>JD</AvatarFallback>
 						</Avatar>
 						<div className="flex-1">
@@ -51,7 +50,7 @@ const UsersCard = ({user}) => {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end" className={'dark:bg-gray-600'}>
 								<DropdownMenuItem>Edit</DropdownMenuItem>
-								<DropdownMenuItem>Delete</DropdownMenuItem>
+								<DropdownMenuItem>Disable</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 					</div>

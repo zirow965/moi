@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers'
 import {getAuth} from "firebase-admin/auth";
+import {adminApp} from "@/utils/firebaseAdminConfig";
 
 export async function GET() {
 	try {
@@ -9,7 +10,7 @@ export async function GET() {
 			return NextResponse.json({error: 'Not authorized'}, {status: 500})
 		}
 
-		const res = await getAuth().listUsers(1000)
+		const res = await getAuth(adminApp).listUsers(1000)
 		return NextResponse.json( res )
 
 	} catch (error) {

@@ -12,14 +12,22 @@ export default function Home() {
 
   const validateEmail = () => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(emailRef.current);
 
-  function handleLogin() {
+  function handleLogin(e) {
+    e.preventDefault();
     if (validateEmail()) {
       login(emailRef.current, passwordRef.current).then(async () => {
         await router.push('/home')
       }).catch(error => {
-        if (error.code === 'auth/wrong-password') {
+        console.log(error.code)
+        if (error.code === 'auth/invalid-credential') {
           Swal.fire({
-            title: 'Wrong password',
+            title: 'Invalid credentials',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          })
+        } else if(error.code === 'auth/too-many-requests') {
+          Swal.fire({
+            title: 'Too many requests, try again later',
             icon: 'error',
             confirmButtonText: 'OK'
           })
@@ -52,7 +60,7 @@ export default function Home() {
                 <span className="bg-white px-4 text-xs text-black rounded-lg uppercase">Login to your account</span>
               </div>
             </div>
-            <div className="mt-10">
+            <form className="mt-10" onSubmit={handleLogin}>
               <div className="flex flex-col mb-6">
                 <label htmlFor="email" className="mb-1 text-xs sm:text-sm tracking-wide font-bold">E-Mail Address:</label>
                 <div className="relative">
@@ -78,7 +86,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex w-full">
-                <button onClick={handleLogin} className="flex items-center justify-center focus:outline-none text-white text-sm sm:text-base bg-blue-600 hover:bg-blue-700 rounded py-2 w-full transition duration-150 ease-in">
+                <button type={"submit"} className="flex items-center justify-center focus:outline-none text-white text-sm sm:text-base bg-blue-600 hover:bg-blue-700 rounded py-2 w-full transition duration-150 ease-in">
                   <span className="mr-2 uppercase">Login</span>
                   <span>
                   <svg className="h-6 w-6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,7 +95,7 @@ export default function Home() {
                 </span>
                 </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>

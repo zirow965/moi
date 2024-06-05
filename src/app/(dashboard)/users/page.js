@@ -3,6 +3,7 @@ import UserCard from "@/components/UserCard";
 import {Button} from "@/components/ui/button";
 import Swal from "sweetalert2";
 import {useEffect} from "react";
+import useSWR from "swr";
 
 
 function PlusIcon(props) {
@@ -27,32 +28,41 @@ function PlusIcon(props) {
 
 
 const Page = () => {
+	const fetcher = (url) => fetch(url, {
+		method: 'GET',
+		headers: {
+			'authorization': '364c9f6a-2e40-429f-bd1c-fba2e39b17a6',
+		}
+	}).then(res => res.json())
+	const { data, error, isLoading } = useSWR('/api/users', fetcher)
+	// useEffect(() => {
+	// 	fetch('/api/users', {
+	// 		method: 'GET',
+	// 		headers: {
+	// 			'authorization': '364c9f6a-2e40-429f-bd1c-fba2e39b17a6',
+	// 		}
+	// 	}).then(res => {
+	// 		console.log(res)
+	// 		if (res.status === 500) {
+	// 			Swal.fire({
+	// 				title: 'Error fetching users',
+	// 				icon: 'error',
+	// 				confirmButtonText: 'OK'
+	// 			})
+	// 		}
+	//
+	// 	}).catch(err => {
+	// 		console.error(err)
+	// 		Swal.fire({
+	// 			title: 'Error fetching users',
+	// 			icon: 'error',
+	// 			confirmButtonText: 'OK'
+	// 		})
+	// 	})
+	// }, []);
 
-	useEffect(() => {
-		fetch('/api/users', {
-			method: 'GET',
-			headers: {
-				'authorization': '364c9f6a-2e40-429f-bd1c-fba2e39b17a6',
-			}
-		}).then(res => {
-			console.log(res)
-			if (res.status === 500) {
-				Swal.fire({
-					title: 'Error fetching users',
-					icon: 'error',
-					confirmButtonText: 'OK'
-				})
-			}
-
-		}).catch(err => {
-			console.error(err)
-			Swal.fire({
-				title: 'Error fetching users',
-				icon: 'error',
-				confirmButtonText: 'OK'
-			})
-		})
-	}, []);
+	if (error) return <div>failed to load</div>
+	if (isLoading) return <div/>
 
 	const users = [
 		{id: 1, name: "John Doe", email: "john@example.com", avatar: "/placeholder-avatar.jpg"},
@@ -75,7 +85,7 @@ const Page = () => {
 				</Button>
 			</div>
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mt-2">
-				{users.map((user) =>
+				{data.users.map((user) =>
 					<UserCard key={user.id} user={user}/>
 				)}
 			</div>
