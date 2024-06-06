@@ -56,6 +56,7 @@ const ChangeCarModal = ({ isOpen, onClose, onSubmit, companyId }) => {
 				<CarYearDropdown
 					id="carYear"
 					name="carYear"
+					disabled={false}
 					value={formValues.carYear}
 					onChange={handleChange}
 				/>

@@ -18,7 +18,9 @@ export function AuthProvider({ children }) {
 				// nookies.set(undefined, 'token', '', { path: '/' });
 			} else {
 				const token = await user.getIdToken();
-				setUser(user);
+				const idTokenResult = await user.getIdTokenResult()
+
+				setUser({admin: !!idTokenResult.claims?.admin, ...user});
 				// nookies.set(undefined, 'token', token, { path: '/' });
 			}
 		});

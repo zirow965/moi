@@ -1,17 +1,20 @@
 'use client'
 import { useState, useContext, useEffect } from 'react';
-import AddCarModal from '@/components/AddCarModal';
-import RenewLicenseModal from '@/components/RenewLicenseModal';
-import AuthorizedSignatureModal from '@/components/AuthorizedSignatureModal';
-import ChangeActivityModal from '@/components/ChangeActivityModal';
-import ChangeOwnerModal from '@/components/ChangeOwnerModal';
-import ChangeCarModal from '@/components/ChangeCarModal';
-import CompleteInformationModal from '@/components/CompleteInformationModal';
 import { addCompany, modifyCompany } from "@/utils/FirebaseHelper";
 import Swal from 'sweetalert2';
 import { db } from '@/utils/firebaseConfig';
 import { AuthContext } from "@/utils/context";
 import { collection, query, startAfter, limit, getDocs, getCountFromServer } from "firebase/firestore";
+import dynamic from 'next/dynamic';
+
+const AddCarModal = dynamic(() => import('@/components/AddCarModal'), { ssr: false });
+const RenewLicenseModal = dynamic(() => import('@/components/RenewLicenseModal'), { ssr: false });
+const AuthorizedSignatureModal = dynamic(() => import('@/components/AuthorizedSignatureModal'), { ssr: false });
+const ChangeActivityModal = dynamic(() => import('@/components/ChangeActivityModal'), { ssr: false });
+const ChangeOwnerModal = dynamic(() => import('@/components/ChangeOwnerModal'), { ssr: false });
+const ChangeCarModal = dynamic(() => import('@/components/ChangeCarModal'), { ssr: false });
+const CompleteInformationModal = dynamic(() => import('@/components/CompleteInformationModal'), { ssr: false });
+
 
 const Page = () => {
 	const [isModalOpen, setModalOpen] = useState(false);
@@ -317,33 +320,33 @@ const Page = () => {
 							</button>
 						</li>
 					</ul>
-			<AddCarModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onSubmit={handleAddCompany} />
-			<RenewLicenseModal isOpen={isRenewLicenseModalOpen} onClose={() => setRenewLicenseModalOpen(false)} onSubmit={async (renewalNumber) => {
+					{isModalOpen && <AddCarModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onSubmit={handleAddCompany} />}
+					{isRenewLicenseModalOpen && <RenewLicenseModal isOpen={isRenewLicenseModalOpen} onClose={() => setRenewLicenseModalOpen(false)} onSubmit={async (renewalNumber) => {
 				const key = new Date().getTime();
 				const renewal = selectedCar?.renewal || {};
 				renewal[key] = renewalNumber;
 				await handleModifyCompany({ renewal });
 				setRenewLicenseModalOpen(false);
-			}} companyId={selectedCar?._id} />
-			<AuthorizedSignatureModal isOpen={isAuthorizedSignatureModalOpen} onClose={() => setAuthorizedSignatureModalOpen(false)} onSubmit={async (authorized) => {
+			}} companyId={selectedCar?._id} />}
+					{isAuthorizedSignatureModalOpen && <AuthorizedSignatureModal isOpen={isAuthorizedSignatureModalOpen} onClose={() => setAuthorizedSignatureModalOpen(false)} onSubmit={async (authorized) => {
 				if (authorized === "yes") {
 					await handleModifyCompany({ authorized: user.displayName });
 				}
 				setAuthorizedSignatureModalOpen(false);
-			}} companyId={selectedCar?._id} />
-			<ChangeActivityModal isOpen={isChangeActivityModalOpen} onClose={() => setChangeActivityModalOpen(false)} onSubmit={async (newActivity) => {
+			}} companyId={selectedCar?._id} />}
+					{isChangeActivityModalOpen && <ChangeActivityModal isOpen={isChangeActivityModalOpen} onClose={() => setChangeActivityModalOpen(false)} onSubmit={async (newActivity) => {
 				await handleModifyCompany({ activity: newActivity });
 				setChangeActivityModalOpen(false);
-			}} companyId={selectedCar?._id} />
-			<ChangeOwnerModal isOpen={isChangeOwnerModalOpen} onClose={() => setChangeOwnerModalOpen(false)} onSubmit={async (newOwner) => {
+			}} companyId={selectedCar?._id} />}
+					{isChangeOwnerModalOpen && <ChangeOwnerModal isOpen={isChangeOwnerModalOpen} onClose={() => setChangeOwnerModalOpen(false)} onSubmit={async (newOwner) => {
 				await handleModifyCompany({ companyOwner: newOwner });
 				setChangeOwnerModalOpen(false);
-			}} companyId={selectedCar?._id} />
-			<ChangeCarModal isOpen={isChangeCarModalOpen} onClose={() => setChangeCarModalOpen(false)} onSubmit={async (newCarDetails) => {
+			}} companyId={selectedCar?._id} />}
+					{isChangeCarModalOpen &&  <ChangeCarModal isOpen={isChangeCarModalOpen} onClose={() => setChangeCarModalOpen(false)} onSubmit={async (newCarDetails) => {
 				await handleModifyCompany(newCarDetails);
 				setChangeCarModalOpen(false);
-			}} companyId={selectedCar?.id} />
-			<CompleteInformationModal isOpen={isCompleteInformationModalOpen} onClose={() => setCompleteInformationModalOpen(false)} onSubmit={handleCompleteInformationSubmit} company={selectedCar} />
+			}} companyId={selectedCar?.id} />}
+					{isCompleteInformationModalOpen && <CompleteInformationModal isOpen={isCompleteInformationModalOpen} onClose={() => setCompleteInformationModalOpen(false)} onSubmit={handleCompleteInformationSubmit} company={selectedCar} />}
 		</div>
 	);
 };
