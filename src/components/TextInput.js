@@ -1,8 +1,8 @@
-const TextInput = ({ id, label, value, onChange, disabled }) => (
+const TextInput = ({ id, label, value, onChange, disabled, type }) => (
 	<div className="col-span-2">
 		<label htmlFor={id} className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{label}</label>
 		<input
-			type="text"
+			type={type || "text"}
 			id={id}
 			name={id}
 			disabled={disabled}

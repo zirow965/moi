@@ -25,18 +25,21 @@ export async function POST(req) {
 		if (authHeader !== '364c9f6a-2e40-429f-bd1c-fba2e39b17a6') {
 			return NextResponse.json({error: 'Not authorized'}, {status: 500})
 		}
-		const { email, displayName, isAdmin } = await req.json();
-		console.log(displayName, email, isAdmin)
+		const { email, displayName, isAdmin, password } = await req.json();
+
 		const auth = getAuth(adminApp);
 		const userRecord = await auth.createUser({
 			email,
 			emailVerified: true,
 			displayName,
+			password,
 			disabled: false,
 		});
 
 		if (isAdmin) {
 			await auth.setCustomUserClaims(userRecord.uid, { admin: true });
+		} else {
+			await auth.setCustomUserClaims(userRecord.uid, { admin: false });
 		}
 
 		return NextResponse.json(userRecord);
@@ -53,10 +56,16 @@ export async function PUT(req) {
 			return NextResponse.json({error: 'Not authorized'}, {status: 500})
 		}
 
-		const { uid, email, displayName, disabled } = req.body;
 		const auth = getAuth(adminApp);
+		const { uid, email, displayName, disabled, isAdmin } = await req.json();
+
+		if (isAdmin) {
+			await auth.setCustomUserClaims(uid, { admin: true });
+		} else {
+			await auth.setCustomUserClaims(uid, { admin: false });
+		}
+
 		const userRecord = await auth.updateUser(uid, {
-			email,
 			displayName,
 			disabled,
 		});
@@ -64,6 +73,7 @@ export async function PUT(req) {
 		return NextResponse.json(userRecord);
 
 	} catch (error) {
+		console.log(error)
 		return NextResponse.json({error}, {status: 500})
 	}
 }

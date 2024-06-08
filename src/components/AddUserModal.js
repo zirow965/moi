@@ -7,10 +7,16 @@ const AddUserModal = ({ isOpen, onClose }) => {
 	const [fullName, setFullName] = useState('');
 	const [email, setEmail] = useState('');
 	const [isAdmin, setIsAdmin] = useState(false);
+	const [password, setPassword] = useState('');
+	const [confirmPassword, setConfirmPassword] = useState('');
 	const { mutate } = useSWRConfig()
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		if (password !== confirmPassword) {
+			await swal.fire('Error', 'Passwords do not match', 'error');
+			return;
+		}
 		try {
 			const addUser = await fetch('/api/users', {
 				method: 'POST',
@@ -18,7 +24,7 @@ const AddUserModal = ({ isOpen, onClose }) => {
 					'Content-Type': 'application/json',
 					'authorization': '364c9f6a-2e40-429f-bd1c-fba2e39b17a6',
 				},
-				body: JSON.stringify({ displayName: fullName, email, isAdmin }),
+				body: JSON.stringify({ displayName: fullName, email, isAdmin, password }),
 			});
 			if (addUser.status !== 200) {
 				await swal.fire( 'Error adding user', '', 'error')
@@ -65,6 +71,20 @@ const AddUserModal = ({ isOpen, onClose }) => {
 							label="Email"
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
+						/>
+						<TextInput
+							id="password"
+							label="Password"
+							type="password"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+						/>
+						<TextInput
+							id="confirmPassword"
+							label="Confirm Password"
+							type="password"
+							value={confirmPassword}
+							onChange={(e) => setConfirmPassword(e.target.value)}
 						/>
 						<div className="flex items-center mb-4">
 							<input id="default-checkbox" type="checkbox" value={isAdmin}

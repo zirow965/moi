@@ -1,8 +1,9 @@
 'use client'
 import { Button } from "@/components/ui/button";
-import { AvatarImage, AvatarFallback, Avatar } from "@/components/ui/avatar";
-import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu";
-import {useEffect} from "react";
+import { AvatarFallback, Avatar } from "@/components/ui/avatar";
+import dynamic from "next/dynamic";
+import {useState} from "react";
+const EditUserModal = dynamic(() => import('@/components/EditUserModal'), { ssr: false });
 
 
 function PencilIcon(props) {
@@ -26,6 +27,7 @@ function PencilIcon(props) {
 }
 
 const UsersCard = ({user}) => {
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
 	const getInitials = (name) => {
 		const splitName = name?.split(' ');
@@ -46,18 +48,10 @@ const UsersCard = ({user}) => {
 							{user.disabled && <div className="text-sm text-red-500">Disabled</div>}
 							{user.customClaims['admin'] && <div className="text-sm text-green-500">Admin</div>}
 						</div>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button size="icon" variant="ghost">
+								<Button onClick={() => setIsEditModalOpen(true)} size="icon" variant="ghost">
 									<PencilIcon className="h-4 w-4 outline-none" />
-									<span className="sr-only">User options</span>
 								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className={'dark:bg-gray-600'}>
-								<DropdownMenuItem>Edit</DropdownMenuItem>
-								<DropdownMenuItem>Disable</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+						{isEditModalOpen && <EditUserModal user={user} isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}/>}
 					</div>
 	);
 };

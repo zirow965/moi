@@ -3,13 +3,13 @@ import BaseModal from './BaseModal';
 import TextInput from './TextInput';
 import CarYearDropdown from './CarYearDropdown';
 
-const ChangeCarModal = ({ isOpen, onClose, onSubmit, companyId }) => {
+const ChangeCarModal = ({ isOpen, onClose, onSubmit, company }) => {
 	const [formValues, setFormValues] = useState({
-		plate: '',
-		VIN: '',
-		carMake: '',
-		carModel: '',
-		carYear: ''
+		plate: company.plate || '',
+		VIN: company.VIN || '',
+		carMake: company.carMake || '',
+		carModel: company.carModel || '',
+		carYear: company.carYear || '',
 	});
 
 	const handleChange = (e) => {
@@ -23,7 +23,7 @@ const ChangeCarModal = ({ isOpen, onClose, onSubmit, companyId }) => {
 	};
 
 	return (
-		<BaseModal isOpen={isOpen} onClose={onClose} title="Change Car" companyId={companyId} onSubmit={handleSubmit}>
+		<BaseModal isOpen={isOpen} onClose={onClose} title="Change Car" companyId={company._id} onSubmit={handleSubmit}>
 			<div className="grid gap-4 mb-4 grid-cols-1">
 				<TextInput
 					label="Plate"

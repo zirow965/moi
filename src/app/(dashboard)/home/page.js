@@ -70,9 +70,9 @@ const Page = () => {
 		setLoading(false);
 	};
 
-	const handlePageChange = (page) => {
+	const handlePageChange = async (page) => {
 		setCurrentPage(page);
-		fetchCompanies(page);
+		await fetchCompanies(page);
 	};
 
 	const totalPages = Math.ceil(totalDocs / 25);
@@ -85,14 +85,14 @@ const Page = () => {
 	}
 
 	const handleModifyCompany = (newData) => {
-		modifyCompany(selectedCar.id, newData).then(() => {
-			Swal.fire({
+		modifyCompany(selectedCar.id, newData).then(async () => {
+			await Swal.fire({
 				title: 'Successfully changed',
 				icon: 'success',
 				confirmButtonText: 'OK'
 			});
-		}).catch(e => {
-			Swal.fire({
+		}).catch(async e => {
+			await Swal.fire({
 				title: 'Failed',
 				icon: 'error',
 				confirmButtonText: 'OK'
@@ -113,14 +113,14 @@ const Page = () => {
 			carModel: event.target.carModel.value,
 			carYear: parseInt(event.target.carYear.value)
 		};
-		addCompany(newCompany).then(() => {
-			Swal.fire({
+		addCompany(newCompany).then(async () => {
+			await Swal.fire({
 				title: 'Successfully added',
 				icon: 'success',
 				confirmButtonText: 'OK'
 			});
-		}).catch(e => {
-			Swal.fire({
+		}).catch(async e => {
+			await Swal.fire({
 				title: 'Failed',
 				icon: 'error',
 				confirmButtonText: 'OK'
@@ -345,7 +345,7 @@ const Page = () => {
 					{isChangeCarModalOpen &&  <ChangeCarModal isOpen={isChangeCarModalOpen} onClose={() => setChangeCarModalOpen(false)} onSubmit={async (newCarDetails) => {
 				await handleModifyCompany(newCarDetails);
 				setChangeCarModalOpen(false);
-			}} companyId={selectedCar?.id} />}
+			}} company={selectedCar} />}
 					{isCompleteInformationModalOpen && <CompleteInformationModal isOpen={isCompleteInformationModalOpen} onClose={() => setCompleteInformationModalOpen(false)} onSubmit={handleCompleteInformationSubmit} company={selectedCar} />}
 		</div>
 	);
