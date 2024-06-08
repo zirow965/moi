@@ -69,8 +69,8 @@ const Page = () => {
 					<th scope="col" className="px-6 py-3">النشاط</th>
 					<th scope="col" className="px-6 py-3">رقم القاعدة</th>
 					<th scope="col" className="px-6 py-3">صنع المركبة</th>
-					<th scope="col" className="px-6 py-3">مو</th>
-					<th scope="col" className="px-6 py-3">Car Year</th>
+					<th scope="col" className="px-6 py-3">موديل المركبة</th>
+					<th scope="col" className="px-6 py-3">سنة الصنع</th>
 				</tr>
 				</thead>
 				<tbody>

@@ -212,20 +212,21 @@ const Page = () => {
 					<table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 grow">
 						<thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
 						<tr>
-							<th scope="col" className="px-6 py-3">Company ID</th>
-							<th scope="col" className="px-6 py-3">Company Owner</th>
-							<th scope="col" className="px-6 py-3">Plate #</th>
-							<th scope="col" className="px-6 py-3">Activity</th>
-							<th scope="col" className="px-6 py-3">VIN</th>
-							<th scope="col" className="px-6 py-3">Car Make</th>
-							<th scope="col" className="px-6 py-3">Car Model</th>
-							<th scope="col" className="px-6 py-3">Car Year</th>
+							<th scope="col" className="px-6 py-3">الرقم المركزي للترخيص</th>
+							<th scope="col" className="px-6 py-3">صاحب الرخصة</th>
+							<th scope="col" className="px-6 py-3">رقم اللوحة</th>
+							<th scope="col" className="px-6 py-3">النشاط</th>
+							<th scope="col" className="px-6 py-3">رقم القاعدة</th>
+							<th scope="col" className="px-6 py-3">صنع المركبة</th>
+							<th scope="col" className="px-6 py-3">موديل المركبة</th>
+							<th scope="col" className="px-6 py-3">سنة الصنع</th>
 							<th scope="col" className="px-6 py-3">Action</th>
 						</tr>
 						</thead>
 						<tbody>
 						{companies.map((company) => (
-							<tr key={company.id} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+							<tr key={company.id}
+								className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
 								<td className="px-6 py-4">{company._id}</td>
 								<td className="px-6 py-4">{company.companyOwner}</td>
 								<td className="px-6 py-4">{company.plate}</td>
@@ -246,39 +247,39 @@ const Page = () => {
 											<div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
 												<div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
 													<button
-														className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'renewLicense')}
 													>
-														Renew Company License
+														تجديد الترخيص التجاري
 													</button>
 													<button
-														className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'authorizedSignature')}
 													>
-														Authorized Signature
+														تجديد اعتماد التوقيع
 													</button>
 													<button
-														className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'changeActivity')}
 													>
-														Change Activity
+														تغيير نشاط
 													</button>
 													<button
-														className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'changeOwner')}
 													>
-														Change Owner
+														تغيير صاحب الرخصة
 													</button>
 													<button
-														className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'changeCar')}
 													>
-														Change Car
+														استبدال مركبة
 													</button>
 												</div>
 											</div>
