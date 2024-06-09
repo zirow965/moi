@@ -51,18 +51,18 @@ const AddCarModal = ({ isOpen, onClose, onSubmit }) => {
 					<form className="p-4 md:p-5" onSubmit={handleSubmit}>
 						<div className="grid gap-4 mb-4 grid-cols-2">
 							<TextInput id="companyId" label="Company ID" value={companyId}
-							           onChange={(e) => setCompanyId(e.target.value)}/>
+							           required={false} onChange={(e) => setCompanyId(e.target.value)}/>
 							<TextInput id="companyOwner" label="Company Owner" value={companyOwner}
-							           onChange={(e) => setCompanyOwner(e.target.value)}/>
+							           required={false} onChange={(e) => setCompanyOwner(e.target.value)}/>
 							<TextInput id="plate" label="Plate #" value={plate}
-							           onChange={(e) => setPlate(e.target.value)}/>
-							<SelectActivity id="activity" label="Activity" onActivityChange={setActivity}/>
-							<TextInput id="VIN" label="VIN" value={VIN} onChange={(e) => setVIN(e.target.value)}/>
+							           required={false} onChange={(e) => setPlate(e.target.value)}/>
+							<SelectActivity id="activity" label="Activity" onActivityChange={setActivity} required={false} />
+							<TextInput  required={false} id="VIN" label="VIN" value={VIN} onChange={(e) => setVIN(e.target.value)}/>
 							<TextInput id="carMake" label="Car Make" value={carMake}
-							           onChange={(e) => setCarMake(e.target.value)}/>
+							           required={false}  onChange={(e) => setCarMake(e.target.value)}/>
 							<TextInput id="carModel" label="Car Model" value={carModel}
-							           onChange={(e) => setCarModel(e.target.value)}/>
-							<CarYearDropdown id="carYear" value={carYear} onChange={(e) => setCarYear(e.target.value)}/>
+							           required={false} onChange={(e) => setCarModel(e.target.value)}/>
+							<CarYearDropdown  required={false} id="carYear" value={carYear} onChange={(e) => setCarYear(e.target.value)}/>
 						</div>
 						<button type="submit"
 						        className="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

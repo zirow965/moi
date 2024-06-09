@@ -2,7 +2,7 @@ import React from 'react';
 import Select from 'react-select';
 import {useActivities} from "@/utils/hooks";
 
-const SelectActivity = ({ onActivityChange }) => {
+const SelectActivity = ({ onActivityChange, required }) => {
 	const { activities } = useActivities();
 
 	const options = activities.map((activity, index) => ({
@@ -42,6 +42,7 @@ const SelectActivity = ({ onActivityChange }) => {
 				classNamePrefix="select"
 				isSearchable
 				name="color"
+				required={required || true}
 				placeholder="Choose an activity"
 				styles={customStyles}
 				onChange={(selectedOption) => onActivityChange(selectedOption.label)}
