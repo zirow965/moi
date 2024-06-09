@@ -23,25 +23,30 @@ const Page = () => {
 	const [selectedUserId, setSelectedUserId] = useState('');
 	const types = [
 		{
-			name: 'Car',
+			name: 'استبدال مركبة',
 			value: 'car'
 		},
 		{
-			name: 'Company',
+			name: 'تغيير صاحب الرخصة',
 			value: 'companyOwner'
 		},
 		{
-			name: 'Renewal',
+			name: 'تجديد الترخيص التجاري',
 			value: 'renewal'
 		},
 		{
-			name: 'Authorized',
+			name: 'تغيير نشاط',
 			value: 'authorized'
 		},
 		{
-			name: 'Activity',
+			name: 'تجديد اعتماد التوقيع',
 			value: 'activity'
+		},
+		{
+			name: 'الغاء ترخيص تجاري',
+			value: 'active'
 		}
+
 	]
 	const fetcher = (url) => fetch(url, {
 		method: 'GET',
