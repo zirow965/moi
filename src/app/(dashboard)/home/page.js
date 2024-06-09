@@ -4,7 +4,7 @@ import { addCompany, modifyCompany } from "@/utils/FirebaseHelper";
 import Swal from 'sweetalert2';
 import { db } from '@/utils/firebaseConfig';
 import { AuthContext } from "@/utils/context";
-import { collection, query, startAfter, limit, getDocs, getCountFromServer } from "firebase/firestore";
+import {collection, query, startAfter, limit, getDocs, getCountFromServer, where, or} from "firebase/firestore";
 import dynamic from 'next/dynamic';
 
 const AddCarModal = dynamic(() => import('@/components/AddCarModal'), { ssr: false });
@@ -20,6 +20,7 @@ const Page = () => {
 	const [isModalOpen, setModalOpen] = useState(false);
 	const [selectedCar, setSelectedCar] = useState(null);
 	const [companies, setCompanies] = useState([]);
+	const [search, setSearch] = useState([]);
 	const [lastVisible, setLastVisible] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -150,6 +151,31 @@ const Page = () => {
 		setOpenDropdownId(null); // Close the dropdown after an action is selected
 	};
 
+	async function handleSearch(e) {
+		e.preventDefault();
+		const searchValue = e.target.elements.search.value;
+		if (!searchValue) {
+			setSearch([]);
+			return;
+		}
+		const ref = collection(db, 'companies');
+		const q = query(ref,
+			or(where('VIN', '==', searchValue),
+				where('_id', '==', searchValue),
+				where('plate', '==', searchValue),
+				where('companyOwner', '==', searchValue),
+				where('acitivty', 'in', [searchValue]),
+			)
+		);
+		const querySnapshot = await getDocs(q);
+		const companies = []
+		querySnapshot.forEach((doc) => {
+			companies.push({ id: doc.id, ...doc.data() });
+		});
+		setSearch(companies);
+	}
+
+
 	const toggleDropdown = (id) => {
 		setOpenDropdownId(openDropdownId === id ? null : id);
 	};
@@ -169,6 +195,35 @@ const Page = () => {
 		handleEditAction({id: selectedCar.id, ...updatedData}, action)
 	};
 
+	function cancelLicense(companyId) {
+		Swal.fire({
+			title: 'Are you sure?',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, cancel it!',
+			cancelButtonText: 'No, keep it',
+			confirmButtonColor: '#d9534f',
+			cancelButtonColor: '#5bc0de'
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				modifyCompany(companyId, { active: false }).then(async () => {
+					await Swal.fire({
+						title: 'Successfully canceled',
+						icon: 'success',
+						confirmButtonText: 'OK'
+					});
+				}).catch(async e => {
+					await Swal.fire({
+						title: 'Failed',
+						icon: 'error',
+						confirmButtonText: 'OK'
+					});
+					console.log(e);
+				});
+			}
+
+		});
+	}
 
 	return (
 				<div className="relative overflow-x-auto shadow-md sm:rounded-lg flex flex-col grow ">
@@ -181,12 +236,15 @@ const Page = () => {
 										<path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
 									</svg>
 								</div>
+								<form onSubmit={handleSearch}>
 								<input
 									type="text"
+									name={'search'}
 									id="table-search"
 									className="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 									placeholder="Search for items"
 								/>
+								</form>
 							</div>
 						</div>
 						{user.admin && <button
@@ -212,9 +270,9 @@ const Page = () => {
 						</tr>
 						</thead>
 						<tbody>
-						{!loading && companies.map((company) => (
+						{!loading && (search.length > 0 ? search : companies).map((company) => (
 							<tr key={company.id}
-								className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+							    className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${company.active === false ? 'dark:bg-red-800 bg-red-300' : ''}`}>
 								<td className="px-6 py-4">{company._id}</td>
 								<td className="px-6 py-4">{company.companyOwner}</td>
 								<td className="px-6 py-4">{company.plate}</td>
@@ -233,7 +291,8 @@ const Page = () => {
 										</button>
 										{openDropdownId === company.id && (
 											<div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-												<div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+												<div className="py-1" role="menu" aria-orientation="vertical"
+												     aria-labelledby="options-menu">
 													<button
 														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
@@ -268,6 +327,13 @@ const Page = () => {
 														onClick={() => handleEditAction(company, 'changeCar')}
 													>
 														استبدال مركبة
+													</button>
+													<button
+														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														role="menuitem"
+														onClick={() => cancelLicense(company.id)}
+													>
+														الغاء ترخيص تجاري
 													</button>
 												</div>
 											</div>

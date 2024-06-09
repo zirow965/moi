@@ -39,13 +39,14 @@ const SelectActivity = ({ onActivityChange, required }) => {
 				id="activities"
 				options={options}
 				className="w-full"
+				isMulti={true}
 				classNamePrefix="select"
 				isSearchable
 				name="color"
 				required={required || true}
 				placeholder="Choose an activity"
 				styles={customStyles}
-				onChange={(selectedOption) => onActivityChange(selectedOption.label)}
+				onChange={(selectedOption) => onActivityChange(selectedOption.map(option => option.label))}
 			/>
 		</div>
 	);

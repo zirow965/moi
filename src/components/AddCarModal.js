@@ -23,7 +23,8 @@ const AddCarModal = ({ isOpen, onClose, onSubmit }) => {
 			carMake,
 			carModel,
 			carYear,
-			activity
+			activity: activity,
+			active: true,
 		});
 	};
 
