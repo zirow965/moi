@@ -52,9 +52,9 @@ const Page = () => {
 		try {
 			let companyQuery;
 			if (page === 1) {
-				companyQuery = query(collection(db, "companies"), limit(5));
+				companyQuery = query(collection(db, "companies"), limit(25));
 			} else {
-				companyQuery = query(collection(db, "companies"), startAfter(lastVisible), limit(5));
+				companyQuery = query(collection(db, "companies"), startAfter(lastVisible), limit(25));
 			}
 
 			const documentSnapshots = await getDocs(companyQuery);
@@ -63,7 +63,7 @@ const Page = () => {
 
 			const companyList = documentSnapshots.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 			setCompanies( companyList );
-			setHasMore(documentSnapshots.docs.length === 5);
+			setHasMore(documentSnapshots.docs.length === 25);
 		} catch (error) {
 			console.error("Error fetching companies: ", error);
 		}
@@ -75,7 +75,7 @@ const Page = () => {
 		await fetchCompanies(page);
 	};
 
-	const totalPages = Math.ceil(totalDocs / 5);
+	const totalPages = Math.ceil(totalDocs / 25);
 	const startPage = Math.max(1, currentPage - 2);
 	const endPage = Math.min(totalPages, currentPage + 2);
 	const pages = [];
