@@ -3,6 +3,7 @@ import {useEffect, useState} from 'react';
 import BaseModal from './BaseModal';
 import TextInput from './TextInput';
 import CarYearDropdown from './CarYearDropdown';
+import SelectActivity from "@/components/SelectActivity";
 
 const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 	const [formValues, setFormValues] = useState({
@@ -38,6 +39,11 @@ const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 		onSubmit(formValues);
 	};
 
+	const handleActivityChange = (activity) => {
+		setFormValues({ ...formValues, activity: activity });
+
+	}
+
 	return (
 		<BaseModal isOpen={isOpen} onClose={onClose} title="Complete Information" companyId={company?._id} onSubmit={handleSubmit}>
 			<div className="grid gap-4 mb-4 grid-cols-1">
@@ -57,14 +63,10 @@ const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 					disabled={company?.plate}
 					onChange={handleChange}
 				/>
-				<TextInput
-					label="Activity"
-					id="activity"
-					name="activity"
-					value={formValues.activity}
-					disabled={formValues.activity}
-					onChange={handleChange}
-				/>
+				<SelectActivity id="activity" label="Activity"
+				                value={formValues.activity}
+				                disabled={company?.activity}
+				                onActivityChange={handleActivityChange}/>
 				<TextInput
 					label="VIN"
 					id="VIN"
