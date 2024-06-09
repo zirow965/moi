@@ -32,14 +32,14 @@ const Page = () => {
 		for (const row of data) {
 			const ref = doc(collection(db, 'companies'));
 			await batch.set(ref, {
-				_id: row[0],
-				companyOwner: row[1],
-				plate: row[2],
-				activity: row[3],
-				VIN: row[4],
-				carMake: row[5],
-				carModel: row[6],
-				carYear: row[7]
+				_id: row[0] || '',
+				companyOwner: row[1] || '',
+				plate: row[2] || '',
+				activity: row[3] || '',
+				VIN: row[4] || '',
+				carMake: row[5] || '',
+				carModel: row[6] || '',
+				carYear: row[7] || ''
 			})
 		}
 		await batch.commit();
@@ -74,17 +74,17 @@ const Page = () => {
 				</tr>
 				</thead>
 				<tbody>
-				{data.map((company) => (
-					<tr key={company[0]}
+				{data.map((company, idx) => (
+					<tr key={idx}
 					    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-						<td className="px-6 py-4">{company[0]}</td>
-						<td className="px-6 py-4">{company[1]}</td>
-						<td className="px-6 py-4">{company[2]}</td>
-						<td className="px-6 py-4">{company[3]}</td>
-						<td className="px-6 py-4">{company[4]}</td>
-						<td className="px-6 py-4">{company[5]}</td>
-						<td className="px-6 py-4">{company[6]}</td>
-						<td className="px-6 py-4">{company[7]}</td>
+						<td className="px-6 py-4">{company[0] || ''}</td>
+						<td className="px-6 py-4">{company[1] || ''}</td>
+						<td className="px-6 py-4">{company[2] || ''}</td>
+						<td className="px-6 py-4">{company[3] || ''}</td>
+						<td className="px-6 py-4">{company[4] || ''}</td>
+						<td className="px-6 py-4">{company[5] || ''}</td>
+						<td className="px-6 py-4">{company[6] || ''}</td>
+						<td className="px-6 py-4">{company[7] || ''}</td>
 					</tr>
 				))}
 				</tbody>
