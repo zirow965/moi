@@ -1,8 +1,9 @@
 'use client'
 import {useEffect, useState} from "react";
-import {AuthContext,} from "./context";
-import {auth} from "@/utils/firebaseConfig";
+import {AuthContext, ActivitiesContext} from "./context";
+import {auth, db} from "@/utils/firebaseConfig";
 import {useRouter} from "next/navigation";
+import {doc, onSnapshot} from "firebase/firestore";
 
 export function AuthProvider({ children }) {
 	const [user, setUser] = useState(null);
@@ -41,3 +42,25 @@ export function AuthProvider({ children }) {
 		<AuthContext.Provider value={{ user }}>{user && children || <div/>}</AuthContext.Provider>
 	);
 }
+
+export const ActivitiesProvider = ({ children }) => {
+	const [activities, setActivities] = useState([]);
+
+	useEffect(() => {
+		const unsubscribe = onSnapshot(doc(db, 'options', 'activities'), (doc) => {
+			if (doc.exists()) {
+				setActivities(doc.data().activities);
+			}
+		});
+
+
+		// Cleanup function to unsubscribe from the listener when the component unmounts
+		return () => unsubscribe();
+	}, []);
+
+	return (
+		<ActivitiesContext.Provider value={{ activities }}>
+			{children}
+		</ActivitiesContext.Provider>
+	);
+};

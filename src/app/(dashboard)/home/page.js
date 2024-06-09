@@ -84,7 +84,7 @@ const Page = () => {
 		pages.push(i);
 	}
 
-	const handleModifyCompany = (newData) => {
+	const handleModifyCompany = async (newData) => {
 		modifyCompany(selectedCar.id, newData).then(async () => {
 			await Swal.fire({
 				title: 'Successfully changed',
@@ -101,18 +101,8 @@ const Page = () => {
 		});
 	};
 
-	const handleAddCompany = (event) => {
-		event.preventDefault();
-		const newCompany = {
-			_id: event.target.companyId.value,
-			companyOwner: event.target.companyOwner.value,
-			plate: event.target.plate.value,
-			activity: event.target.activity.value,
-			VIN: event.target.VIN.value,
-			carMake: event.target.carMake.value,
-			carModel: event.target.carModel.value,
-			carYear: parseInt(event.target.carYear.value)
-		};
+	const handleAddCompany = (newCompany) => {
+
 		addCompany(newCompany).then(async () => {
 			await Swal.fire({
 				title: 'Successfully added',
@@ -179,8 +169,6 @@ const Page = () => {
 		handleEditAction({id: selectedCar.id, ...updatedData}, action)
 	};
 
-	if (loading)
-		return <div/>
 
 	return (
 				<div className="relative overflow-x-auto shadow-md sm:rounded-lg flex flex-col grow ">
@@ -224,7 +212,7 @@ const Page = () => {
 						</tr>
 						</thead>
 						<tbody>
-						{companies.map((company) => (
+						{!loading && companies.map((company) => (
 							<tr key={company.id}
 								className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
 								<td className="px-6 py-4">{company._id}</td>

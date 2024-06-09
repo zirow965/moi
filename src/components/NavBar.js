@@ -3,10 +3,11 @@ import Link from 'next/link';
 import { usePathname  } from 'next/navigation';
 import { DarkThemeToggle } from 'flowbite-react';
 import { logout } from "@/utils/FirebaseHelper";
+import {useAuth} from "@/utils/hooks";
 
 const NavBar = () => {
 	const pathname = usePathname()
-
+	const { user } = useAuth();
 	return (
 		<nav className="bg-white dark:bg-gray-900 w-full z-20 border-b border-gray-200 dark:border-gray-600">
 			<div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -18,30 +19,32 @@ const NavBar = () => {
 								Home
 							</Link>
 						</li>
-						<li>
+						{user.admin && <> <li>
 							<Link href="/reports"
 							      className={`block py-2 px-3 rounded md:bg-transparent md:p-0 ${pathname === '/reports' ? 'text-blue-700 bg-blue-700 md:dark:text-blue-500' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700'}`}>
 								Reports
 							</Link>
 						</li>
-						<li>
+							<li>
 							<Link href="/users"
-							      className={`block py-2 px-3 rounded md:bg-transparent md:p-0 ${pathname === '/users' ? 'text-blue-700 bg-blue-700 md:dark:text-blue-500' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700'}`}>
-								Users
-							</Link>
-						</li>
-						<li>
-							<Link href="/import"
-							      className={`block py-2 px-3 rounded md:bg-transparent md:p-0 ${pathname === '/import' ? 'text-blue-700 bg-blue-700 md:dark:text-blue-500' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700'}`}>
-								Import
-							</Link>
-						</li>
-						<li>
-							<Link href="/activity"
-							      className={`block py-2 px-3 rounded md:bg-transparent md:p-0 ${pathname === '/activity' ? 'text-blue-700 bg-blue-700 md:dark:text-blue-500' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700'}`}>
-								Activity
-							</Link>
-						</li>
+							className={`block py-2 px-3 rounded md:bg-transparent md:p-0 ${pathname === '/users' ? 'text-blue-700 bg-blue-700 md:dark:text-blue-500' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700'}`}>
+						Users
+					</Link>
+				</li>
+				<li>
+					<Link href="/import"
+					      className={`block py-2 px-3 rounded md:bg-transparent md:p-0 ${pathname === '/import' ? 'text-blue-700 bg-blue-700 md:dark:text-blue-500' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700'}`}>
+						Import
+					</Link>
+				</li>
+				<li>
+					<Link href="/activity"
+					      className={`block py-2 px-3 rounded md:bg-transparent md:p-0 ${pathname === '/activity' ? 'text-blue-700 bg-blue-700 md:dark:text-blue-500' : 'text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700'}`}>
+						Activity
+					</Link>
+				</li>
+						</>
+				}
 						<li>
 							<button
 								onClick={() => logout()}
