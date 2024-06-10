@@ -3,7 +3,7 @@ import TextInput from './TextInput';
 import CarYearDropdown from './CarYearDropdown';
 import SelectActivity from "@/components/SelectActivity";
 
-const AddCarModal = ({ isOpen, onClose, onSubmit }) => {
+const AddCompanyModal = ({ isOpen, onClose, onSubmit }) => {
 	const [companyId, setCompanyId] = useState('');
 	const [companyOwner, setCompanyOwner] = useState('');
 	const [plate, setPlate] = useState('');
@@ -50,7 +50,7 @@ const AddCarModal = ({ isOpen, onClose, onSubmit }) => {
 						</button>
 					</div>
 					<form className="p-4 md:p-5" onSubmit={handleSubmit}>
-						<div className="grid gap-4 mb-4 grid-cols-2">
+						<div className=" gap-4 mb-4 space-y-2">
 							<TextInput id="companyId" label="Company ID" value={companyId}
 							           required={false} onChange={(e) => setCompanyId(e.target.value)}/>
 							<TextInput id="companyOwner" label="Company Owner" value={companyOwner}
@@ -82,4 +82,4 @@ const AddCarModal = ({ isOpen, onClose, onSubmit }) => {
 	);
 };
 
-export default AddCarModal;
+export default AddCompanyModal;

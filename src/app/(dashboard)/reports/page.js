@@ -1,11 +1,11 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { Datepicker } from "flowbite-react";
-import { Bar } from 'react-chartjs-2';
+import React, {useEffect, useState} from 'react';
+import {Bar} from 'react-chartjs-2';
 import {BarElement, CategoryScale, Chart, Legend, LinearScale, Title, Tooltip} from 'chart.js';
-import { db } from '@/utils/firebaseConfig';
-import {collection, query, where, orderBy, onSnapshot} from "firebase/firestore";
+import {db} from '@/utils/firebaseConfig';
+import {collection, deleteDoc, doc, onSnapshot, orderBy, query, where} from "firebase/firestore";
 import useSWR from "swr";
+import Swal from "sweetalert2";
 
 Chart.register(CategoryScale,
 	LinearScale,
@@ -35,11 +35,11 @@ const Page = () => {
 			value: 'renewal'
 		},
 		{
-			name: 'تغيير نشاط',
+			name: 'تجديد اعتماد التوقيع',
 			value: 'authorized'
 		},
 		{
-			name: 'تجديد اعتماد التوقيع',
+			name: 'تغيير نشاط',
 			value: 'activity'
 		},
 		{
@@ -71,6 +71,7 @@ const Page = () => {
 				const startOfDay = new Date(startDate);
 				const endOfDay = new Date(endDate);
 				endOfDay.setHours(23, 59, 59, 999);
+				startOfDay.setHours(0, 0, 0, 0);
 				condition.push(where('timestamp', '>=', startOfDay.toISOString()), where('timestamp', '<=', endOfDay.toISOString()));
 			}
 
@@ -82,7 +83,9 @@ const Page = () => {
 			}
 			const q = query(collection(db, 'logs'), orderBy('timestamp', 'desc'), ...condition);
 			return onSnapshot(q, (logsSnapshot) => {
-				const logs = logsSnapshot.docs.map(doc => doc.data());
+				const logs = logsSnapshot.docs.map(doc => {
+					return {id: doc.id, ...doc.data()}
+				});
 				setLogs(logs);
 
 			});
@@ -123,6 +126,33 @@ const Page = () => {
 		datasets: datasets
 	};
 
+	async function handleDeleteLog(log) {
+		await Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, delete it!',
+			cancelButtonText: 'No, keep it',
+			confirmButtonColor: '#d9534f',
+			cancelButtonColor: '#5bc0de'
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				await deleteDoc(doc(db, 'logs', log.id));
+				await Swal.fire(
+					'Deleted!',
+					'Your log has been deleted.',
+					'success'
+				)
+			}
+		})
+
+	}
+
+	function handleViewLog(log) {
+
+	}
+
 	return (
 		<div>
 			<form className={'space-x-3'}>
@@ -140,7 +170,7 @@ const Page = () => {
 					        value={selectedUserId} onChange={e =>
 						setSelectedUserId(e.target.value)
 					}>
-						<option value={''}  >Select User</option>
+						<option value={''}>Select User</option>
 						{users && users.map(user => (
 							<option key={user.uid} value={user.uid}>
 								{user.displayName}
@@ -159,6 +189,86 @@ const Page = () => {
 					}
 				}
 			}}/>
+			<table className="mt-4 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 grow">
+				<thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+				<tr>
+					<th scope="col" className="px-6 py-3">Name</th>
+					{types.map((type, idx) =>
+						<th key={idx + 999} scope="col" className="px-6 py-3">{type.name}</th>
+					)}
+				</tr>
+				</thead>
+				<tbody>
+				{users?.map((user, idx) => (
+					logs.filter(log => log.userId === user.uid).length > 0 && (
+						<tr key={idx}
+						    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+							<td className="px-6 py-4">{user.displayName}</td>
+							{types.map((type, index) => (
+								<td key={index}
+								    className="px-6 py-4">{logs.filter(log => log.userId === user.uid && log.type === type.value).length}</td>
+							))}
+						</tr>
+					)
+				))}
+				<tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+					<td className="px-6 py-4">Total</td>
+					{types.map((type, index) => (
+						<td key={index} className="px-6 py-4">{logs.filter(log => log.type === type.value).length}</td>
+					))}
+				</tr>
+				</tbody>
+			</table>
+			<table className="mt-4 w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 grow">
+				<thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+				<tr>
+					<th scope="col" className="px-6 py-3">Date</th>
+					<th scope="col" className="px-6 py-3">Name</th>
+					<th scope="col" className="px-6 py-3">Type</th>
+					<th scope="col" className="px-6 py-3">Before</th>
+					<th scope="col" className="px-6 py-3">After</th>
+					<th scope="col" className="px-6 py-3">Action</th>
+				</tr>
+				</thead>
+				<tbody>
+				{users && logs.map((log, idx) => (
+					<tr key={idx}
+					    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+						<td className="px-6 py-4">
+							{new Date(log.timestamp).toLocaleString('en-US', {
+								year: 'numeric',
+								month: '2-digit',
+								day: '2-digit',
+								hour: 'numeric',
+								minute: '2-digit',
+								second: '2-digit',
+								hour12: true
+							})}
+						</td>
+						<td className="px-6 py-4">{users.find(user => user.uid === log.userId)?.displayName}</td>
+						<td className="px-6 py-4">{types.find(type => type.value === log.type)?.name}</td>
+						<td className="px-6 py-4">{log.before[log.type] || ''}</td>
+						<td className="px-6 py-4">{log.after[log.type]}</td>
+						<td className="px-6 py-4 relative">
+							<div className="relative inline-block text-left">
+								<button
+									className="inline-flex justify-center w-full dark:text-white dark:bg-gray-800 dark:border-gray-700 rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none "
+									onClick={() => handleViewLog(log)}
+								>
+									View
+								</button>
+								<button
+									className="inline-flex justify-center w-full dark:text-white dark:bg-gray-800 dark:border-gray-700 rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none "
+									onClick={() => handleDeleteLog(log)}
+								>
+									Delete
+								</button>
+							</div>
+						</td>
+					</tr>
+				))}
+				</tbody>
+			</table>
 		</div>
 	);
 };

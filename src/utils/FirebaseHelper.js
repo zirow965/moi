@@ -1,6 +1,6 @@
 import {auth, db} from './firebaseConfig';
 import {signInWithEmailAndPassword, signOut} from "firebase/auth";
-import { doc, addDoc, collection, setDoc } from "firebase/firestore";
+import { doc, addDoc, collection, setDoc, deleteDoc } from "firebase/firestore";
 
 
 export const login = async (username, password) => await signInWithEmailAndPassword(auth, username, password);

@@ -4,10 +4,20 @@ import { addCompany, modifyCompany } from "@/utils/FirebaseHelper";
 import Swal from 'sweetalert2';
 import { db } from '@/utils/firebaseConfig';
 import { AuthContext } from "@/utils/context";
-import {collection, query, startAfter, limit, getDocs, getCountFromServer, where, or} from "firebase/firestore";
+import {
+	collection,
+	query,
+	startAfter,
+	limit,
+	getDocs,
+	getCountFromServer,
+	where,
+	or,
+	deleteDoc, doc
+} from "firebase/firestore";
 import dynamic from 'next/dynamic';
 
-const AddCarModal = dynamic(() => import('@/components/AddCarModal'), { ssr: false });
+const AddCarModal = dynamic(() => import('@/components/AddCompanyModal'), { ssr: false });
 const RenewLicenseModal = dynamic(() => import('@/components/RenewLicenseModal'), { ssr: false });
 const AuthorizedSignatureModal = dynamic(() => import('@/components/AuthorizedSignatureModal'), { ssr: false });
 const ChangeActivityModal = dynamic(() => import('@/components/ChangeActivityModal'), { ssr: false });
@@ -20,7 +30,8 @@ const Page = () => {
 	const [isModalOpen, setModalOpen] = useState(false);
 	const [selectedCar, setSelectedCar] = useState(null);
 	const [companies, setCompanies] = useState([]);
-	const [search, setSearch] = useState([]);
+	const [searchResult, setSearchResult] = useState([]);
+	const [search, setSearch] = useState('');
 	const [lastVisible, setLastVisible] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -153,9 +164,10 @@ const Page = () => {
 
 	async function handleSearch(e) {
 		e.preventDefault();
+		setSearch(e.target.elements.search.value)
 		const searchValue = e.target.elements.search.value;
 		if (!searchValue) {
-			setSearch([]);
+			setSearchResult([]);
 			return;
 		}
 		const ref = collection(db, 'companies');
@@ -172,7 +184,7 @@ const Page = () => {
 		querySnapshot.forEach((doc) => {
 			companies.push({ id: doc.id, ...doc.data() });
 		});
-		setSearch(companies);
+		setSearchResult(companies);
 	}
 
 
@@ -225,6 +237,36 @@ const Page = () => {
 		});
 	}
 
+	function handleDeleteCompany(id) {
+		Swal.fire({
+			title: 'Are you sure?',
+			text: "You won't be able to revert this!",
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonText: 'Yes, delete it!',
+			cancelButtonText: 'No, keep it',
+			confirmButtonColor: '#d9534f',
+			cancelButtonColor: '#5bc0de'
+		}).then(async (result) => {
+			if (result.isConfirmed) {
+				deleteDoc(doc(db, 'companies', id)).then(async () => {
+					await Swal.fire({
+						title: 'Successfully deleted',
+						icon: 'success',
+						confirmButtonText: 'OK'
+					});
+				}).catch(async e => {
+					await Swal.fire({
+						title: 'Failed',
+						icon: 'error',
+						confirmButtonText: 'OK'
+					});
+					console.log(e);
+				});
+			}
+		})
+	}
+
 	return (
 				<div className="relative overflow-x-auto shadow-md sm:rounded-lg flex flex-col grow ">
 					<div className="flex justify-between pb-4 bg-white dark:bg-gray-900">
@@ -247,7 +289,7 @@ const Page = () => {
 								</form>
 							</div>
 						</div>
-						{user.admin && <button
+						{user?.admin && <button
 							onClick={() => setModalOpen(true)}
 							className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 						>
@@ -256,7 +298,7 @@ const Page = () => {
 					</div>
 					<div className={'grow'}>
 					<table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 grow">
-						<thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+						<thead className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 text-lg text-center">
 						<tr>
 							<th scope="col" className="px-6 py-3">الرقم المركزي للترخيص</th>
 							<th scope="col" className="px-6 py-3">صاحب الرخصة</th>
@@ -270,66 +312,80 @@ const Page = () => {
 						</tr>
 						</thead>
 						<tbody>
-						{!loading && (search.length > 0 ? search : companies).map((company) => (
+						{!loading && (search ? searchResult : companies).map((company) => (
 							<tr key={company.id}
-							    className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${company.active === false ? 'dark:bg-red-800 bg-red-300' : ''}`}>
+							    className={`text-center bg-white text-lg border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${company.active === false ? 'dark:bg-red-800 bg-red-300' : ''}`}>
 								<td className="px-6 py-4">{company._id}</td>
 								<td className="px-6 py-4">{company.companyOwner}</td>
 								<td className="px-6 py-4">{company.plate}</td>
-								<td className="px-6 py-4">{company.activity}</td>
+								<td className="px-6 py-4">{Array.isArray(company.activity) ? company.activity?.map((ele , idx) => {
+									return company.activity.length - 1 === idx ?
+										<span key={ele}>{`${ele}`}</span>
+										:
+										<span key={ele}>{`${ele} / `}</span>
+								}) : company.activity || ''}</td>
 								<td className="px-6 py-4">{company.VIN}</td>
 								<td className="px-6 py-4">{company.carMake}</td>
 								<td className="px-6 py-4">{company.carModel}</td>
 								<td className="px-6 py-4">{company.carYear}</td>
-								<td className="px-6 py-4 relative">
-									<div className="relative inline-block text-left">
+								<td className="px-6 py-4">
+									<div className="relative flex text-left space-x-2">
 										<button
 											className="inline-flex justify-center w-full dark:text-white dark:bg-gray-800 dark:border-gray-700 rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none "
 											onClick={() => toggleDropdown(company.id)}
 										>
 											Edit
 										</button>
+										{user?.admin &&
+											<button
+												className="inline-flex justify-center w-full dark:text-white dark:bg-gray-800 dark:border-gray-700 rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none "
+												onClick={() => handleDeleteCompany(company.id)}
+											>
+												Delete
+											</button>}
 										{openDropdownId === company.id && (
-											<div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+											<div
+												onMouseLeave={() => setOpenDropdownId(null)}
+												className="origin-top-right absolute right-0 top-3/4 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
 												<div className="py-1" role="menu" aria-orientation="vertical"
 												     aria-labelledby="options-menu">
 													<button
-														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'renewLicense')}
 													>
 														تجديد الترخيص التجاري
 													</button>
 													<button
-														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'authorizedSignature')}
 													>
 														تجديد اعتماد التوقيع
 													</button>
 													<button
-														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'changeActivity')}
 													>
 														تغيير نشاط
 													</button>
 													<button
-														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'changeOwner')}
 													>
 														تغيير صاحب الرخصة
 													</button>
 													<button
-														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => handleEditAction(company, 'changeCar')}
 													>
 														استبدال مركبة
 													</button>
 													<button
-														className="w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+														className="w-full text-right px-4 py-2 text-lg text-gray-700 hover:bg-gray-100 hover:text-gray-900"
 														role="menuitem"
 														onClick={() => cancelLicense(company.id)}
 													>
@@ -345,41 +401,49 @@ const Page = () => {
 						</tbody>
 					</table>
 					</div>
-					<ul className="inline-flex -space-x-px text-sm mt-12">
-						<li>
-							<button
-								onClick={() => handlePageChange(currentPage - 1)}
-								disabled={currentPage === 1}
-								className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-							>
-								Previous
-							</button>
-						</li>
-						{pages.map((page) => (
-							<li key={page}>
+					<div className="flex justify-between items-center mt-4">
+						<ul className="inline-flex -space-x-px text-sm">
+							<li>
 								<button
-									onClick={() => handlePageChange(page)}
-									className={`flex items-center justify-center px-3 h-8 leading-tight ${currentPage === page ? 'text-blue-600 border-gray-300 bg-blue-50' : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700'} dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}
+									onClick={() => handlePageChange(currentPage - 1)}
+									disabled={currentPage === 1}
+									className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
 								>
-									{page}
+									Previous
 								</button>
 							</li>
-						))}
-						<li>
-							<button
-								onClick={() => handlePageChange(currentPage + 1)}
-								disabled={!hasMore}
-								className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-							>
-								Next
-							</button>
-						</li>
-					</ul>
-					{isModalOpen && <AddCarModal isOpen={isModalOpen} onClose={() => setModalOpen(false)} onSubmit={handleAddCompany} />}
-					{isRenewLicenseModalOpen && <RenewLicenseModal isOpen={isRenewLicenseModalOpen} onClose={() => setRenewLicenseModalOpen(false)} onSubmit={async (renewalNumber) => {
-				const key = new Date().getTime();
-				const renewal = selectedCar?.renewal || {};
-				renewal[key] = renewalNumber;
+							{pages.map((page) => (
+								<li key={page}>
+									<button
+										onClick={() => handlePageChange(page)}
+										className={`flex items-center justify-center px-3 h-8 leading-tight ${currentPage === page ? 'text-blue-600 border-gray-300 bg-blue-50' : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700'} dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white`}
+									>
+										{page}
+									</button>
+								</li>
+							))}
+							<li>
+								<button
+									onClick={() => handlePageChange(currentPage + 1)}
+									disabled={!hasMore}
+									className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+								>
+									Next
+								</button>
+							</li>
+						</ul>
+						<span className="text-sm text-gray-700 dark:text-gray-400">
+      Showing <span className="font-semibold text-gray-900 dark:text-white">{currentPage * companies.length - (companies.length - 1)}</span> to <span
+							className="font-semibold text-gray-900 dark:text-white">{currentPage * companies.length}</span> of <span
+							className="font-semibold text-gray-900 dark:text-white">{totalDocs}</span> Entries
+  </span>
+					</div>
+					{isModalOpen && <AddCarModal isOpen={isModalOpen} onClose={() => setModalOpen(false)}
+					                             onSubmit={handleAddCompany}/>}
+					{isRenewLicenseModalOpen && <RenewLicenseModal isOpen={isRenewLicenseModalOpen}
+					                                               onClose={() => setRenewLicenseModalOpen(false)}
+					                                               onSubmit={async (renewalNumber) => {
+						                                               const renewal = selectedCar?.renewal;
 				await handleModifyCompany({ renewal });
 				setRenewLicenseModalOpen(false);
 			}} companyId={selectedCar?._id} />}
