@@ -443,8 +443,8 @@ const Page = () => {
 					{isRenewLicenseModalOpen && <RenewLicenseModal isOpen={isRenewLicenseModalOpen}
 					                                               onClose={() => setRenewLicenseModalOpen(false)}
 					                                               onSubmit={async (renewalNumber) => {
-						                                               const renewal = selectedCar?.renewal;
-				await handleModifyCompany({ renewal });
+
+				await handleModifyCompany({renewal: renewalNumber });
 				setRenewLicenseModalOpen(false);
 			}} companyId={selectedCar?._id} />}
 					{isAuthorizedSignatureModalOpen && <AuthorizedSignatureModal isOpen={isAuthorizedSignatureModalOpen} onClose={() => setAuthorizedSignatureModalOpen(false)} onSubmit={async (authorized) => {
