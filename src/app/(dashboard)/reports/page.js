@@ -149,10 +149,65 @@ const Page = () => {
 
 	}
 
-	function handleViewLog(log) {
+	async function handleViewLog(log) {
+		const beforeKeys = Object.keys(log.before).sort();
+		const afterKeys = Object.keys(log.after).sort();
 
+		const formatValue = (value) => {
+			if (Array.isArray(value)) {
+				return value.join(' / ');
+			} else if (typeof value === 'object' && value !== null) {
+				return JSON.stringify(value, null, 2);
+			} else {
+				return value;
+			}
+		};
+
+		const beforeTableRows = beforeKeys.map(key => `
+        <tr class="bg-gray-100 dark:bg-gray-800">
+            <td class="border px-4 py-2 text-white">${key}</td>
+            <td class="border px-4 py-2 text-white">${formatValue(log.before[key])}</td>
+        </tr>
+    `).join('');
+
+		const afterTableRows = afterKeys.map(key => `
+        <tr class="bg-gray-100 dark:bg-gray-800">
+            <td class="border px-4 py-2 text-white">${key}</td>
+            <td class="border px-4 py-2 text-white">${formatValue(log.after[key])}</td>
+        </tr>
+    `).join('');
+
+		await Swal.fire({
+			title: 'Log Details',
+			html: `
+            <h2>Before</h2>
+            <table class="table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 ">Name</th>
+                        <th class="px-4 py-2 ">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${beforeTableRows}
+                </tbody>
+            </table>
+            <h2 class="mt-4">After</h2>
+            <table class="table-auto">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${afterTableRows}
+                </tbody>
+            </table>
+        `,
+			confirmButtonText: 'Close',
+		});
 	}
-
 	return (
 		<div>
 			<form className={'space-x-3'}>
@@ -235,10 +290,10 @@ const Page = () => {
 					<tr key={idx}
 					    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
 						<td className="px-6 py-4">
-							{new Date(log.timestamp).toLocaleString('en-US', {
+							{new Date(new Date(log.timestamp).getTime() - (3 * 60 * 60 * 1000)).toLocaleString('en-US', {
 								year: 'numeric',
-								month: '2-digit',
-								day: '2-digit',
+								month: 'long',
+								day: 'numeric',
 								hour: 'numeric',
 								minute: '2-digit',
 								second: '2-digit',
