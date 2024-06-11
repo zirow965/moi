@@ -7,6 +7,7 @@ import SelectActivity from "@/components/SelectActivity";
 
 const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 	const [formValues, setFormValues] = useState({
+		_id: company?._id || '',
 		companyOwner: company?.companyOwner || '',
 		plate: company?.plate || '',
 		activity: company?.activity || '',
@@ -18,6 +19,7 @@ const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 
 	useEffect(() => {
 		setFormValues({
+			_id: company?._id || '',
 			companyOwner: company?.companyOwner || '',
 			plate: company?.plate || '',
 			activity: company?.activity || '',
@@ -46,9 +48,17 @@ const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 
 	return (
 		<BaseModal isOpen={isOpen} onClose={onClose} title="Complete Information" companyId={company?._id} onSubmit={handleSubmit}>
-			<div className="grid gap-4 mb-4 grid-cols-1">
+			<div dir={'rtl'} className="grid gap-4 mb-4 grid-cols-1">
 				<TextInput
-					label="Company Owner"
+					label="الرقم المركزي للترخيص"
+					id="_id"
+					name="_id"
+					disabled={company?._id}
+					value={formValues._id}
+					onChange={handleChange}
+				/>
+				<TextInput
+					label="صاحب الرخصة"
 					id="companyOwner"
 					name="companyOwner"
 					disabled={company?.companyOwner}
@@ -56,19 +66,19 @@ const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 					onChange={handleChange}
 				/>
 				<TextInput
-					label="Plate"
+					label="رقم اللوحة"
 					id="plate"
 					name="plate"
 					value={formValues.plate}
 					disabled={company?.plate}
 					onChange={handleChange}
 				/>
-				<SelectActivity id="activity" label="Activity"
+				<SelectActivity id="activity" label="النشاط"
 				                value={formValues.activity}
 				                disabled={company?.activity}
 				                onActivityChange={handleActivityChange}/>
 				<TextInput
-					label="VIN"
+					label="رقم القاعدة"
 					id="VIN"
 					name="VIN"
 					disabled={company?.VIN }
@@ -76,7 +86,7 @@ const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 					onChange={handleChange}
 				/>
 				<TextInput
-					label="Car Make"
+					label="صنع المركبة"
 					id="carMake"
 					name="carMake"
 					disabled={company?.carMake}
@@ -84,7 +94,7 @@ const CompleteInformationModal = ({ isOpen, onClose, onSubmit, company }) => {
 					onChange={handleChange}
 				/>
 				<TextInput
-					label="Car Model"
+					label="موديل المركبة"
 					id="carModel"
 					name="carModel"
 					disabled={company?.carModel}

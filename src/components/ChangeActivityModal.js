@@ -11,10 +11,9 @@ const ChangeActivityModal = ({ isOpen, onClose, onSubmit, companyId }) => {
 	};
 
 	return (
-		<BaseModal isOpen={isOpen} onClose={onClose} title="Change Activity" companyId={companyId} onSubmit={handleSubmit}>
+		<BaseModal isOpen={isOpen} onClose={onClose} title="تغيير نشاط" companyId={companyId} onSubmit={handleSubmit}>
 			<div className="grid gap-4 mb-4 grid-cols-1">
 				<div>
-					<label htmlFor="newActivity" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">New Activity</label>
 			<SelectActivity id="newActivity" label="New Activity" onActivityChange={setNewActivity}/>
 				</div>
 			</div>

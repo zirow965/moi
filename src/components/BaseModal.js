@@ -1,6 +1,6 @@
 const BaseModal = ({ isOpen, onClose, title, companyId, children, onSubmit }) => {
 	return (
-		<div className={`fixed inset-0 z-50 flex items-center justify-center ${isOpen ? '' : 'hidden'}`}>
+		<div dir={'rtl'} className={`fixed inset-0 z-50 flex items-center justify-center ${isOpen ? '' : 'hidden'}`}>
 			{/* Backdrop */}
 			<div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
 

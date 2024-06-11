@@ -33,8 +33,8 @@ const SelectActivity = ({ onActivityChange, required = true }) => {
 	};
 
 	return (
-		<div className={'w-full'}>
-			<label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select an activity</label>
+		<div dir={'rtl'} className={'w-full'}>
+			<label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">النشاط</label>
 			<Select
 				id="activities"
 				options={options}

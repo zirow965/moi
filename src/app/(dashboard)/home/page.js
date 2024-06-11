@@ -16,6 +16,7 @@ import {
 	deleteDoc, doc
 } from "firebase/firestore";
 import dynamic from 'next/dynamic';
+import ViewCompanyModal from "@/components/ViewCompanyModal";
 
 const AddCarModal = dynamic(() => import('@/components/AddCompanyModal'), { ssr: false });
 const RenewLicenseModal = dynamic(() => import('@/components/RenewLicenseModal'), { ssr: false });
@@ -47,6 +48,7 @@ const Page = () => {
 	const [isChangeCarModalOpen, setChangeCarModalOpen] = useState(false);
 	const [isCompleteInformationModalOpen, setCompleteInformationModalOpen] = useState(false);
 	const [openDropdownId, setOpenDropdownId] = useState(null);
+	const [isViewCompanyModalOpen, setViewCompanyModalOpen] = useState(false);
 
 	useEffect(() => {
 		const fetchTotalDocs = async () => {
@@ -336,6 +338,15 @@ const Page = () => {
 										>
 											Edit
 										</button>
+										<button
+											className="inline-flex justify-center w-full dark:text-white dark:bg-gray-800 dark:border-gray-700 rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none "
+											onClick={() => {
+												setSelectedCar(company);
+												setViewCompanyModalOpen(true);
+											}}
+										>
+											View
+										</button>
 										{user?.admin &&
 											<button
 												className="inline-flex justify-center w-full dark:text-white dark:bg-gray-800 dark:border-gray-700 rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none "
@@ -466,7 +477,8 @@ const Page = () => {
 				setChangeCarModalOpen(false);
 			}} company={selectedCar} />}
 					{isCompleteInformationModalOpen && <CompleteInformationModal isOpen={isCompleteInformationModalOpen} onClose={() => setCompleteInformationModalOpen(false)} onSubmit={handleCompleteInformationSubmit} company={selectedCar} />}
-		</div>
+					{isViewCompanyModalOpen && <ViewCompanyModal isOpen={isViewCompanyModalOpen} onClose={() => setViewCompanyModalOpen(false)} company={selectedCar} />}
+				</div>
 	);
 };
 

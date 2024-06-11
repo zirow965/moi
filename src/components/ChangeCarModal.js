@@ -26,28 +26,28 @@ const ChangeCarModal = ({ isOpen, onClose, onSubmit, company }) => {
 		<BaseModal isOpen={isOpen} onClose={onClose} title="Change Car" companyId={company._id} onSubmit={handleSubmit}>
 			<div className="grid gap-4 mb-4 grid-cols-1">
 				<TextInput
-					label="Plate"
+					label="رقم اللوحة"
 					id="plate"
 					name="plate"
 					value={formValues.plate}
 					onChange={handleChange}
 				/>
 				<TextInput
-					label="VIN"
+					label="رقم القاعدة"
 					id="VIN"
 					name="VIN"
 					value={formValues.VIN}
 					onChange={handleChange}
 				/>
 				<TextInput
-					label="Car Make"
+					label="صنع المركبة"
 					id="carMake"
 					name="carMake"
 					value={formValues.carMake}
 					onChange={handleChange}
 				/>
 				<TextInput
-					label="Car Model"
+					label="موديل المركبة"
 					id="carModel"
 					name="carModel"
 					value={formValues.carModel}

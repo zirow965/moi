@@ -2,7 +2,7 @@ const carYears = Array.from({ length: 61 }, (_, i) => 1980 + i);
 
 const CarYearDropdown = ({ value, onChange, disabled, required = true}) => (
 	<div className="col-span-2">
-		<label htmlFor="carYear" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Car Year</label>
+		<label htmlFor="carYear" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">سنة الصنع</label>
 		<select
 			id="carYear"
 			name="carYear"
