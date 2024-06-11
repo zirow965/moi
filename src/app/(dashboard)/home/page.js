@@ -178,7 +178,7 @@ const Page = () => {
 				where('_id', '==', searchValue),
 				where('plate', '==', searchValue),
 				where('companyOwner', '==', searchValue),
-				where('acitivty', 'in', [searchValue]),
+				where('activity', 'array-contains', searchValue),
 			)
 		);
 		const querySnapshot = await getDocs(q);
@@ -460,7 +460,8 @@ const Page = () => {
 			}} companyId={selectedCar?._id} />}
 					{isAuthorizedSignatureModalOpen && <AuthorizedSignatureModal isOpen={isAuthorizedSignatureModalOpen} onClose={() => setAuthorizedSignatureModalOpen(false)} onSubmit={async (authorized) => {
 				if (authorized === "yes") {
-					await handleModifyCompany({ authorized: user.displayName });
+					const timestamp = Date.now();
+					await handleModifyCompany({ authorized: `${user.displayName}-${timestamp}` });
 				}
 				setAuthorizedSignatureModalOpen(false);
 			}} companyId={selectedCar?._id} />}

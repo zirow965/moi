@@ -46,6 +46,7 @@ const BaseModal = ({ isOpen, onClose, title, company}) => {
 						<thead
 							className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 text-md text-center">
 						<tr>
+							<th scope="col" className="px-6 py-3">تاريخ</th>
 							<th scope="col" className="px-6 py-3">الرقم المركزي للترخيص</th>
 							<th scope="col" className="px-6 py-3">صاحب الرخصة</th>
 							<th scope="col" className="px-6 py-3">رقم اللوحة</th>
@@ -54,7 +55,6 @@ const BaseModal = ({ isOpen, onClose, title, company}) => {
 							<th scope="col" className="px-6 py-3">صنع المركبة</th>
 							<th scope="col" className="px-6 py-3">موديل المركبة</th>
 							<th scope="col" className="px-6 py-3">سنة الصنع</th>
-							<th scope="col" className="px-6 py-3">Action</th>
 						</tr>
 						</thead>
 						<tbody>
