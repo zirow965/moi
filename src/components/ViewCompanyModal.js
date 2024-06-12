@@ -19,6 +19,21 @@ const BaseModal = ({ isOpen, onClose, title, company}) => {
 
 	}, [company.id]);
 
+	function getChanges(before, after) {
+		const changes = {};
+
+		for (const key in after) {
+			if (JSON.stringify(before[key]) !== JSON.stringify(after[key])) {
+				changes[key] = {
+					before: before[key],
+					after: after[key]
+				};
+			}
+		}
+
+		return changes;
+	}
+
 	return (
 		<div className={`fixed inset-0 z-50 flex items-center justify-center ${isOpen ? '' : 'hidden'}`}>
 			{/* Backdrop */}
@@ -47,52 +62,61 @@ const BaseModal = ({ isOpen, onClose, title, company}) => {
 							className="text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 text-md text-center">
 						<tr>
 							<th scope="col" className="px-6 py-3">تاريخ</th>
-							<th scope="col" className="px-6 py-3">الرقم المركزي للترخيص</th>
-							<th scope="col" className="px-6 py-3">صاحب الرخصة</th>
-							<th scope="col" className="px-6 py-3">رقم اللوحة</th>
-							<th scope="col" className="px-6 py-3">النشاط</th>
-							<th scope="col" className="px-6 py-3">رقم القاعدة</th>
-							<th scope="col" className="px-6 py-3">صنع المركبة</th>
-							<th scope="col" className="px-6 py-3">موديل المركبة</th>
-							<th scope="col" className="px-6 py-3">سنة الصنع</th>
+							<th scope="col" className="px-6 py-3">Key</th>
+							<th scope="col" className="px-6 py-3">Before</th>
+							<th scope="col" className="px-6 py-3">After</th>
 						</tr>
 						</thead>
 						<tbody>
-						{logs?.map((company) => (
-							<tr key={company.id}
-							    className={`text-center bg-white text-md border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${company.active === false ? 'dark:bg-red-800 bg-red-300' : ''}`}>
-								<td className="px-6 py-4">
-									{new Date(new Date(company.timestamp).getTime() - (3 * 60 * 60 * 1000)).toLocaleString('en-US', {
-										year: 'numeric',
-										month: 'long',
-										day: 'numeric',
-										hour: 'numeric',
-										minute: '2-digit',
-										second: '2-digit',
-										hour12: true
-									})}
-								</td>
-								<td className="px-6 py-4">{company.after._id}</td>
-								<td className="px-6 py-4">{company.after.companyOwner}</td>
-								<td className="px-6 py-4">{company.after.plate}</td>
-								<td className="px-6 py-4">{Array.isArray(company.after.activity) ? company.after.activity?.map((ele, idx) => {
-									return company.after.activity.length - 1 === idx ?
-										<span key={ele}>{`${ele}`}</span>
-										:
-										<span key={ele}>{`${ele} / `}</span>
-								}) : company.after.activity || ''}</td>
-								<td className="px-6 py-4">{company.after.VIN}</td>
-								<td className="px-6 py-4">{company.after.carMake}</td>
-								<td className="px-6 py-4">{company.after.carModel}</td>
-								<td className="px-6 py-4">{company.after.carYear}</td>
-							</tr>
-						))}
+						{logs?.map((log) => {
+							const changes = getChanges(log.before, log.after);
+							return Object.keys(changes).map((key) => (
+								<tr key={log.id + key}
+								    className={`text-center bg-white text-md border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 ${company.active === false ? 'dark:bg-red-800 bg-red-300' : ''}`}>
+									<td className="px-6 py-4">
+										{new Date(new Date(log.timestamp).getTime() - (3 * 60 * 60 * 1000)).toLocaleString('en-US', {
+											year: 'numeric',
+											month: 'long',
+											day: 'numeric',
+											hour: 'numeric',
+											minute: '2-digit',
+											second: '2-digit',
+											hour12: true
+										})}
+									</td>
+									<td className="px-6 py-4">{key}</td>
+									{key === 'activity' ? (
+										<>
+										<td className="px-6 py-4">
+											{changes[key].after.map((ele, idx) => {
+												return changes[key].after.length - 1 === idx ?
+													<span key={ele}>{`${ele}`}</span>
+													:
+													<span key={ele}>{`${ele} / `}</span>
+											})}
+										</td>
+										<td className="px-6 py-4">
+											{changes[key].after.map((ele, idx) => {
+												return changes[key].after.length - 1 === idx ?
+													<span key={ele}>{`${ele}`}</span>
+													:
+													<span key={ele}>{`${ele} / `}</span>
+											})}
+										</td>
+										</>
+										) : <>
+										<td className="px-6 py-4">{changes[key].before}</td>
+										<td className="px-6 py-4">{changes[key].after}</td>
+									</>}
+								</tr>
+							));
+						})}
 						</tbody>
 					</table>
 					<div className="flex justify-center mt-4">
 						<button
 							type="button"
-							className="mb-4 text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+									className="mb-4 text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
 							onClick={onClose}
 						>
 							Close
